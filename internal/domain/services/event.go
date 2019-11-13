@@ -2,10 +2,11 @@ package services
 
 import (
 	"context"
-	"github.com/otusteam/go/cleancalendar/internal/domain/interfaces"
-	"github.com/otusteam/go/cleancalendar/internal/domain/models"
-	"github.com/satori/go.uuid"
 	"time"
+
+	"github.com/orensimple/otus_hw1_8/internal/domain/interfaces"
+	"github.com/orensimple/otus_hw1_8/internal/domain/models"
+	uuid "github.com/satori/go.uuid"
 )
 
 type EventService struct {

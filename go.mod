@@ -8,6 +8,7 @@ require (
 	github.com/jackc/fake v0.0.0-20150926172116-812a484cc733 // indirect
 	github.com/jackc/pgx v3.5.0+incompatible
 	github.com/jmoiron/sqlx v1.2.0
+	github.com/orensimple/otus_hw1_8 v0.0.0-20191027135241-c9a0bb9f9154 // indirect
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/satori/go.uuid v1.2.0
 	github.com/shopspring/decimal v0.0.0-20190905144223-a36b5d85f337 // indirect

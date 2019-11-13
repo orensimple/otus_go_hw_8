@@ -11,5 +11,4 @@ var RootCmd = &cobra.Command{
 
 func init() {
 	RootCmd.AddCommand(GrpcServerCmd)
-	RootCmd.AddCommand(GrpcClientCmd)
 }
