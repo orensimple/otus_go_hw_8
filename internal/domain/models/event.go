@@ -2,12 +2,11 @@ package models
 
 import (
 	"time"
-
-	uuid "github.com/satori/go.uuid"
 )
 
+// Event type
 type Event struct {
-	Id        uuid.UUID
+	ID        int64
 	Owner     string
 	Title     string
 	Text      string

@@ -1,5 +1,6 @@
 package errors
 
+// EventError type
 type EventError string
 
 func (ee EventError) Error() string {
@@ -7,6 +8,8 @@ func (ee EventError) Error() string {
 }
 
 var (
-	ErrOverlaping       = EventError("another event exists for this date")
+	//ErrOverlaping comment
+	ErrOverlaping = EventError("another event exists for this date")
+	//ErrIncorrectEndDate comment
 	ErrIncorrectEndDate = EventError("end_date is incorrect")
 )

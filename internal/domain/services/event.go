@@ -6,7 +6,6 @@ import (
 
 	"github.com/orensimple/otus_hw1_8/internal/domain/interfaces"
 	"github.com/orensimple/otus_hw1_8/internal/domain/models"
-	uuid "github.com/satori/go.uuid"
 )
 
 //EventService struct
@@ -15,17 +14,16 @@ type EventService struct {
 }
 
 //CreateEvent func
-func (es *EventService) CreateEvent(ctx context.Context, owner, title, text string, startTime *time.Time, endTime *time.Time) (*models.Event, error) {
-	// TODO: persistence, validation
+func (es *EventService) CreateEvent(ctx context.Context, ID int64, owner, title, text string, startTime *time.Time, endTime *time.Time) (*models.Event, error) {
 	event := &models.Event{
-		Id:        uuid.NewV4(),
+		ID:        ID,
 		Owner:     owner,
 		Title:     title,
 		Text:      text,
 		StartTime: startTime,
 		EndTime:   endTime,
 	}
-	err := es.EventStorage.SaveEvent(ctx, event)
+	err := es.EventStorage.CreateEvent(ctx, event)
 	if err != nil {
 		return nil, err
 	}
@@ -33,17 +31,16 @@ func (es *EventService) CreateEvent(ctx context.Context, owner, title, text stri
 }
 
 //UpdateEvent func
-func (es *EventService) UpdateEvent(ctx context.Context, owner, title, text string, startTime *time.Time, endTime *time.Time) (*models.Event, error) {
-	// TODO: persistence, validation
+func (es *EventService) UpdateEvent(ctx context.Context, ID int64, owner, title, text string, startTime *time.Time, endTime *time.Time) (*models.Event, error) {
 	event := &models.Event{
-		Id:        uuid.NewV4(),
+		ID:        ID,
 		Owner:     owner,
 		Title:     title,
 		Text:      text,
 		StartTime: startTime,
 		EndTime:   endTime,
 	}
-	err := es.EventStorage.SaveEvent(ctx, event)
+	err := es.EventStorage.UpdateEvent(ctx, event)
 	if err != nil {
 		return nil, err
 	}
@@ -51,35 +48,33 @@ func (es *EventService) UpdateEvent(ctx context.Context, owner, title, text stri
 }
 
 //DeleteEvent func
-func (es *EventService) DeleteEvent(ctx context.Context, owner, title, text string, startTime *time.Time, endTime *time.Time) (*models.Event, error) {
-	// TODO: persistence, validation
+func (es *EventService) DeleteEvent(ctx context.Context, ID int64, owner, title, text string, startTime *time.Time, endTime *time.Time) (*models.Event, error) {
 	event := &models.Event{
-		Id:        uuid.NewV4(),
+		ID:        ID,
 		Owner:     owner,
 		Title:     title,
 		Text:      text,
 		StartTime: startTime,
 		EndTime:   endTime,
 	}
-	err := es.EventStorage.SaveEvent(ctx, event)
+	err := es.EventStorage.UpdateEvent(ctx, event)
 	if err != nil {
 		return nil, err
 	}
 	return event, nil
 }
 
-//GetEventById func
-func (es *EventService) GetEventById(ctx context.Context, owner, title, text string, startTime *time.Time, endTime *time.Time) (*models.Event, error) {
-	// TODO: persistence, validation
+//GetEventByID func
+func (es *EventService) GetEventByID(ctx context.Context, ID int64, owner, title, text string, startTime *time.Time, endTime *time.Time) (*models.Event, error) {
 	event := &models.Event{
-		Id:        uuid.NewV4(),
+		ID:        ID,
 		Owner:     owner,
 		Title:     title,
 		Text:      text,
 		StartTime: startTime,
 		EndTime:   endTime,
 	}
-	err := es.EventStorage.SaveEvent(ctx, event)
+	err := es.EventStorage.UpdateEvent(ctx, event)
 	if err != nil {
 		return nil, err
 	}
