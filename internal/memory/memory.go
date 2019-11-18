@@ -2,35 +2,66 @@ package memory
 
 import (
 	"context"
+	"sync"
 
+	"github.com/orensimple/otus_hw1_8/internal/domain/errors"
 	"github.com/orensimple/otus_hw1_8/internal/domain/models"
 )
 
 // MemEventStorage slice
 type MemEventStorage struct {
-	main []models.Event
+	events map[int64]*models.Event
+	mutex  *sync.Mutex
 }
 
-// CreateEvent asdf
-func (mem *MemEventStorage) CreateEvent(ctx context.Context, event *models.Event) error {
+// NewMemEventStorage init
+func NewMemEventStorage() *MemEventStorage {
+	return &MemEventStorage{
+		events: make(map[int64]*models.Event),
+		mutex:  new(sync.Mutex),
+	}
+}
+
+// SaveEvent to mem
+func (mem *MemEventStorage) SaveEvent(ctx context.Context, event *models.Event) error {
+	mem.mutex.Lock()
+	mem.events[event.ID] = event
+	mem.mutex.Unlock()
 
 	return nil
 }
 
-// UpdateEvent asdf
-func (mem *MemEventStorage) UpdateEvent(ctx context.Context, event *models.Event) error {
+// UpdateEvent to mem
+func (mem *MemEventStorage) UpdateEvent(ctx context.Context, event *models.Event) (*models.Event, error) {
+	mem.mutex.Lock()
+	mem.events[event.ID] = event
+	mem.mutex.Unlock()
 
-	return nil
+	return event, nil
 }
 
-// DeleteEvent asdf
-func (mem *MemEventStorage) DeleteEvent(ctx context.Context, event *models.Event) error {
+// GetEvents to mem
+func (mem *MemEventStorage) GetEvents(ctx context.Context) ([]*models.Event, error) {
+	Events := make([]*models.Event, 0)
+	mem.mutex.Lock()
+	for _, bm := range mem.events {
+		Events = append(Events, bm)
+	}
+	mem.mutex.Unlock()
 
-	return nil
+	return Events, nil
 }
 
-// GetEventByID asDf
-func (mem *MemEventStorage) GetEventByID(ctx context.Context, ID int64) (*models.Event, error) {
+// DeleteEvent from mem
+func (mem *MemEventStorage) DeleteEvent(ctx context.Context, ID int64) error {
+	mem.mutex.Lock()
+	defer mem.mutex.Unlock()
 
-	return nil, nil
+	_, ex := mem.events[ID]
+	if ex {
+		delete(mem.events, ID)
+		return nil
+	}
+
+	return errors.ErrEventNotFound
 }

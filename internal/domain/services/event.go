@@ -23,7 +23,8 @@ func (es *EventService) CreateEvent(ctx context.Context, ID int64, owner, title,
 		StartTime: startTime,
 		EndTime:   endTime,
 	}
-	err := es.EventStorage.CreateEvent(ctx, event)
+
+	err := es.EventStorage.SaveEvent(ctx, event)
 	if err != nil {
 		return nil, err
 	}
@@ -40,43 +41,26 @@ func (es *EventService) UpdateEvent(ctx context.Context, ID int64, owner, title,
 		StartTime: startTime,
 		EndTime:   endTime,
 	}
-	err := es.EventStorage.UpdateEvent(ctx, event)
+
+	event, err := es.EventStorage.UpdateEvent(ctx, event)
 	if err != nil {
 		return nil, err
 	}
 	return event, nil
+}
+
+//GetEvents func
+func (es *EventService) GetEvents(ctx context.Context) ([]*models.Event, error) {
+	events, err := es.EventStorage.GetEvents(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return events, nil
 }
 
 //DeleteEvent func
-func (es *EventService) DeleteEvent(ctx context.Context, ID int64, owner, title, text string, startTime *time.Time, endTime *time.Time) (*models.Event, error) {
-	event := &models.Event{
-		ID:        ID,
-		Owner:     owner,
-		Title:     title,
-		Text:      text,
-		StartTime: startTime,
-		EndTime:   endTime,
-	}
-	err := es.EventStorage.UpdateEvent(ctx, event)
-	if err != nil {
-		return nil, err
-	}
-	return event, nil
-}
+func (es *EventService) DeleteEvent(ctx context.Context, ID int64) error {
+	err := es.EventStorage.DeleteEvent(ctx, ID)
 
-//GetEventByID func
-func (es *EventService) GetEventByID(ctx context.Context, ID int64, owner, title, text string, startTime *time.Time, endTime *time.Time) (*models.Event, error) {
-	event := &models.Event{
-		ID:        ID,
-		Owner:     owner,
-		Title:     title,
-		Text:      text,
-		StartTime: startTime,
-		EndTime:   endTime,
-	}
-	err := es.EventStorage.UpdateEvent(ctx, event)
-	if err != nil {
-		return nil, err
-	}
-	return event, nil
+	return err
 }

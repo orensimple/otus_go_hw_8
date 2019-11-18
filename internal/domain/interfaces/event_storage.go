@@ -8,8 +8,8 @@ import (
 
 // EventStorage interface
 type EventStorage interface {
-	CreateEvent(ctx context.Context, event *models.Event) error
-	UpdateEvent(ctx context.Context, event *models.Event) error
-	DeleteEvent(ctx context.Context, event *models.Event) error
-	GetEventByID(ctx context.Context, ID int64) (*models.Event, error)
+	SaveEvent(ctx context.Context, event *models.Event) error
+	UpdateEvent(ctx context.Context, event *models.Event) (*models.Event, error)
+	GetEvents(ctx context.Context) ([]*models.Event, error)
+	DeleteEvent(ctx context.Context, ID int64) error
 }

@@ -10,6 +10,6 @@ func (ee EventError) Error() string {
 var (
 	//ErrOverlaping comment
 	ErrOverlaping = EventError("another event exists for this date")
-	//ErrIncorrectEndDate comment
-	ErrIncorrectEndDate = EventError("end_date is incorrect")
+	//ErrEventNotFound comment
+	ErrEventNotFound = EventError("not found event")
 )
