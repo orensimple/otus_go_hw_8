@@ -24,6 +24,10 @@ func NewMemEventStorage() *MemEventStorage {
 
 // SaveEvent to mem
 func (mem *MemEventStorage) SaveEvent(ctx context.Context, event *models.Event) error {
+	if _, ok := mem.events[event.ID]; ok {
+		return errors.ErrEventExist
+
+	}
 	mem.mutex.Lock()
 	mem.events[event.ID] = event
 	mem.mutex.Unlock()
@@ -33,11 +37,15 @@ func (mem *MemEventStorage) SaveEvent(ctx context.Context, event *models.Event) 
 
 // UpdateEvent to mem
 func (mem *MemEventStorage) UpdateEvent(ctx context.Context, event *models.Event) (*models.Event, error) {
-	mem.mutex.Lock()
-	mem.events[event.ID] = event
-	mem.mutex.Unlock()
+	if _, ok := mem.events[event.ID]; ok {
+		mem.mutex.Lock()
+		mem.events[event.ID] = event
+		mem.mutex.Unlock()
 
-	return event, nil
+		return event, nil
+	}
+
+	return nil, errors.ErrEventNotFound
 }
 
 // GetEvents to mem

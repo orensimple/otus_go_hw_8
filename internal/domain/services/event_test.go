@@ -2,56 +2,102 @@ package services
 
 import (
 	"context"
-	"fmt"
 	"testing"
+	"time"
 
+	"github.com/orensimple/otus_hw1_8/internal/domain/errors"
+	"github.com/orensimple/otus_hw1_8/internal/domain/services"
+	"github.com/orensimple/otus_hw1_8/internal/memory"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGetEvents(t *testing.T) {
-	id := "id"
-	user := &models.User{ID: id}
+	eventStorage := memory.NewMemEventStorage()
 
-	s := NewEventLocalStorage()
-
-	for i := 0; i < 10; i++ {
-		bm := &models.Event{
-			ID:     fmt.Sprintf("id%d", i),
-			UserID: user.ID,
-		}
-
-		err := s.CreateEvent(context.Background(), user, bm)
+	eventService := &services.EventService{
+		EventStorage: eventStorage,
+	}
+	var i int64
+	for i = 0; i < 10; i++ {
+		time := time.Now()
+		_, err := eventService.CreateEvent(context.Background(), i, "a", "a", "a", &time, &time)
 		assert.NoError(t, err)
 	}
 
-	returnedEvents, err := s.GetEvents(context.Background(), user)
+	returnedEvents, err := eventService.GetEvents(context.Background())
 	assert.NoError(t, err)
 
 	assert.Equal(t, 10, len(returnedEvents))
 }
 
-/*func TestDeleteBookmark(t *testing.T) {
-	id1 := "id1"
-	id2 := "id2"
+func TestDeleteEvent(t *testing.T) {
+	eventStorage := memory.NewMemEventStorage()
 
-	user1 := &models.User{ID: id1}
-	user2 := &models.User{ID: id2}
+	eventService := &services.EventService{
+		EventStorage: eventStorage,
+	}
+	var i int64
+	for i = 0; i < 2; i++ {
+		time := time.Now()
+		_, err := eventService.CreateEvent(context.Background(), i, "a", "a", "a", &time, &time)
+		assert.NoError(t, err)
+	}
 
-	bmID := "bmID"
-	bm := &models.Bookmark{ID: bmID, UserID: user1.ID}
-
-	s := NewBookmarkLocalStorage()
-
-	err := s.CreateBookmark(context.Background(), user1, bm)
+	returnedEvents, err := eventService.GetEvents(context.Background())
 	assert.NoError(t, err)
 
-	err = s.DeleteBookmark(context.Background(), user1, bmID)
+	err = eventService.DeleteEvent(context.Background(), 0)
 	assert.NoError(t, err)
 
-	err = s.CreateBookmark(context.Background(), user1, bm)
+	err = eventService.DeleteEvent(context.Background(), 1)
 	assert.NoError(t, err)
 
-	err = s.DeleteBookmark(context.Background(), user2, bmID)
+	err = eventService.DeleteEvent(context.Background(), 2)
 	assert.Error(t, err)
-	assert.Equal(t, err, bookmark.ErrBookmarkNotFound)
-}*/
+	assert.Equal(t, err, errors.ErrEventNotFound)
+
+	assert.Equal(t, 2, len(returnedEvents))
+}
+
+func TestCreateEvents(t *testing.T) {
+	eventStorage := memory.NewMemEventStorage()
+
+	eventService := &services.EventService{
+		EventStorage: eventStorage,
+	}
+
+	time := time.Now()
+	_, err := eventService.CreateEvent(context.Background(), 1, "a", "a", "a", &time, &time)
+	assert.NoError(t, err)
+
+	returnedEvents, err := eventService.GetEvents(context.Background())
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(returnedEvents))
+
+	_, err = eventService.CreateEvent(context.Background(), 1, "a", "a", "a", &time, &time)
+	assert.Error(t, err)
+	assert.Equal(t, err, errors.ErrEventExist)
+}
+
+func TestUpdateEvents(t *testing.T) {
+	eventStorage := memory.NewMemEventStorage()
+
+	eventService := &services.EventService{
+		EventStorage: eventStorage,
+	}
+
+	time := time.Now()
+	_, err := eventService.CreateEvent(context.Background(), 1, "a", "a", "a", &time, &time)
+	assert.NoError(t, err)
+
+	returnedEvents, err := eventService.GetEvents(context.Background())
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(returnedEvents))
+
+	_, err = eventService.UpdateEvent(context.Background(), 3, "a", "a", "a", &time, &time)
+	assert.Error(t, err)
+	assert.Equal(t, err, errors.ErrEventNotFound)
+
+	_, err = eventService.UpdateEvent(context.Background(), 1, "b", "b", "a", &time, &time)
+	assert.NoError(t, err)
+}

@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-// Event type
+// Event main model
 type Event struct {
 	ID        int64
 	Owner     string
