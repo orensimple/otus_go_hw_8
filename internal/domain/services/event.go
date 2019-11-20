@@ -14,7 +14,7 @@ type EventService struct {
 }
 
 //CreateEvent func
-func (es *EventService) CreateEvent(ctx context.Context, ID int64, owner, title, text string, startTime *time.Time, endTime *time.Time) (*models.Event, error) {
+func (es *EventService) CreateEvent(ctx context.Context, ID int64, owner, title, text string, startTime time.Time, endTime time.Time) (*models.Event, error) {
 	event := &models.Event{
 		ID:        ID,
 		Owner:     owner,
@@ -32,7 +32,7 @@ func (es *EventService) CreateEvent(ctx context.Context, ID int64, owner, title,
 }
 
 //UpdateEvent func
-func (es *EventService) UpdateEvent(ctx context.Context, ID int64, owner, title, text string, startTime *time.Time, endTime *time.Time) (*models.Event, error) {
+func (es *EventService) UpdateEvent(ctx context.Context, ID int64, owner, title, text string, startTime time.Time, endTime time.Time) (*models.Event, error) {
 	event := &models.Event{
 		ID:        ID,
 		Owner:     owner,

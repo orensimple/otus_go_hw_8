@@ -20,7 +20,7 @@ func TestGetEvents(t *testing.T) {
 	var i int64
 	for i = 0; i < 10; i++ {
 		time := time.Now()
-		_, err := eventService.CreateEvent(context.Background(), i, "a", "a", "a", &time, &time)
+		_, err := eventService.CreateEvent(context.Background(), i, "a", "a", "a", time, time)
 		assert.NoError(t, err)
 	}
 
@@ -39,7 +39,7 @@ func TestDeleteEvent(t *testing.T) {
 	var i int64
 	for i = 0; i < 2; i++ {
 		time := time.Now()
-		_, err := eventService.CreateEvent(context.Background(), i, "a", "a", "a", &time, &time)
+		_, err := eventService.CreateEvent(context.Background(), i, "a", "a", "a", time, time)
 		assert.NoError(t, err)
 	}
 
@@ -67,14 +67,14 @@ func TestCreateEvents(t *testing.T) {
 	}
 
 	time := time.Now()
-	_, err := eventService.CreateEvent(context.Background(), 1, "a", "a", "a", &time, &time)
+	_, err := eventService.CreateEvent(context.Background(), 1, "a", "a", "a", time, time)
 	assert.NoError(t, err)
 
 	returnedEvents, err := eventService.GetEvents(context.Background())
 	assert.NoError(t, err)
 	assert.Equal(t, 1, len(returnedEvents))
 
-	_, err = eventService.CreateEvent(context.Background(), 1, "a", "a", "a", &time, &time)
+	_, err = eventService.CreateEvent(context.Background(), 1, "a", "a", "a", time, time)
 	assert.Error(t, err)
 	assert.Equal(t, err, errors.ErrEventExist)
 }
@@ -87,17 +87,17 @@ func TestUpdateEvents(t *testing.T) {
 	}
 
 	time := time.Now()
-	_, err := eventService.CreateEvent(context.Background(), 1, "a", "a", "a", &time, &time)
+	_, err := eventService.CreateEvent(context.Background(), 1, "a", "a", "a", time, time)
 	assert.NoError(t, err)
 
 	returnedEvents, err := eventService.GetEvents(context.Background())
 	assert.NoError(t, err)
 	assert.Equal(t, 1, len(returnedEvents))
 
-	_, err = eventService.UpdateEvent(context.Background(), 3, "a", "a", "a", &time, &time)
+	_, err = eventService.UpdateEvent(context.Background(), 3, "a", "a", "a", time, time)
 	assert.Error(t, err)
 	assert.Equal(t, err, errors.ErrEventNotFound)
 
-	_, err = eventService.UpdateEvent(context.Background(), 1, "b", "b", "a", &time, &time)
+	_, err = eventService.UpdateEvent(context.Background(), 1, "b", "b", "a", time, time)
 	assert.NoError(t, err)
 }
