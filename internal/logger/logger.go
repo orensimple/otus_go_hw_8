@@ -1,6 +1,11 @@
 package logger
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/amitrai48/logger"
+	"github.com/spf13/viper"
+)
 
 // A global variable so that log functions can be directly accessed
 var log Logger
@@ -101,4 +106,25 @@ func Panicf(format string, args ...interface{}) {
 
 func WithFields(keyValues Fields) Logger {
 	return log.WithFields(keyValues)
+}
+
+var ContextLogger logger.Logger
+
+// InitLogger init
+func InitLogger() {
+	loggerConfig := logger.Configuration{
+		EnableConsole:     true,
+		ConsoleLevel:      viper.GetString("log_level.command"),
+		ConsoleJSONFormat: true,
+		EnableFile:        true,
+		FileLevel:         viper.GetString("log_level.file"),
+		FileJSONFormat:    true,
+		FileLocation:      viper.GetString("log_file"),
+	}
+	err := logger.NewLogger(loggerConfig, logger.InstanceZapLogger)
+	if err != nil {
+		log.Fatalf("Could not instantiate log %s", err.Error())
+	}
+
+	ContextLogger = logger.WithFields(logger.Fields{"version": "0.0.1"})
 }

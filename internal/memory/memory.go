@@ -3,6 +3,7 @@ package memory
 import (
 	"context"
 	"sync"
+	"time"
 
 	"github.com/orensimple/otus_hw1_8/internal/domain/errors"
 	"github.com/orensimple/otus_hw1_8/internal/domain/models"
@@ -48,12 +49,59 @@ func (mem *MemEventStorage) UpdateEvent(ctx context.Context, event *models.Event
 	return nil, errors.ErrEventNotFound
 }
 
-// GetEvents to mem
+// GetEvents from mem
 func (mem *MemEventStorage) GetEvents(ctx context.Context) ([]*models.Event, error) {
 	Events := make([]*models.Event, 0)
 	mem.mutex.Lock()
 	for _, bm := range mem.events {
 		Events = append(Events, bm)
+	}
+	mem.mutex.Unlock()
+
+	return Events, nil
+}
+
+// GetEventsByDay from mem
+func (mem *MemEventStorage) GetEventsByDay(ctx context.Context) ([]*models.Event, error) {
+	timeNow := time.Now()
+	Events := make([]*models.Event, 0)
+	mem.mutex.Lock()
+	for _, bm := range mem.events {
+		if timeNow.YearDay() == bm.StartTime.YearDay() {
+			Events = append(Events, bm)
+		}
+	}
+	mem.mutex.Unlock()
+
+	return Events, nil
+}
+
+// GetEventsByWeek from mem
+func (mem *MemEventStorage) GetEventsByWeek(ctx context.Context) ([]*models.Event, error) {
+	timeNow := time.Now()
+	weekNow, yearNow := timeNow.ISOWeek()
+	Events := make([]*models.Event, 0)
+	mem.mutex.Lock()
+	for _, bm := range mem.events {
+		weekEvent, yearEvent := bm.StartTime.ISOWeek()
+		if weekNow == weekEvent && yearNow == yearEvent {
+			Events = append(Events, bm)
+		}
+	}
+	mem.mutex.Unlock()
+
+	return Events, nil
+}
+
+// GetEventsByMonth from mem
+func (mem *MemEventStorage) GetEventsByMonth(ctx context.Context) ([]*models.Event, error) {
+	timeNow := time.Now()
+	Events := make([]*models.Event, 0)
+	mem.mutex.Lock()
+	for _, bm := range mem.events {
+		if timeNow.Month() == bm.StartTime.Month() && timeNow.Year() == bm.StartTime.Year() {
+			Events = append(Events, bm)
+		}
 	}
 	mem.mutex.Unlock()
 

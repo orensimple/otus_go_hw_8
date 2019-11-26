@@ -14,4 +14,6 @@ var (
 	ErrEventExist = EventError("event alredy exist")
 	//ErrEventNotFound comment
 	ErrEventNotFound = EventError("not found event")
+	//ErrOverlaping comment
+	ErrWrangParams = EventError("invalid input params")
 )
