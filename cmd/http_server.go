@@ -7,13 +7,15 @@ import (
 
 	"github.com/orensimple/otus_hw1_8/config"
 	"github.com/orensimple/otus_hw1_8/internal/domain/handlers"
-	"github.com/orensimple/otus_hw1_8/internal/domain/middlewares"
+	"github.com/orensimple/otus_hw1_8/internal/domain/mw"
 	"github.com/orensimple/otus_hw1_8/internal/logger"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var addr string
+
+const TimeOut = 50 * time.Millisecond
 
 // HTTPServerCmd init
 var HTTPServerCmd = &cobra.Command{
@@ -27,16 +29,17 @@ var HTTPServerCmd = &cobra.Command{
 		serverAddr.WriteString(viper.GetString("http_listen.ip"))
 		serverAddr.WriteString(":")
 		serverAddr.WriteString(viper.GetString("http_listen.port"))
+
 		logger.ContextLogger.Infof("Starting http server", viper.GetString("http_listen.ip"), viper.GetString("http_listen.port"))
 		router := &handlers.Handler{}
-		router.AddForTest()
+		router.InitDB()
 		mux := http.NewServeMux()
-		mux.HandleFunc("/events_for_day", middlewares.HTTPLogger(middlewares.WithTimeout(router.GetEventsByDay, 50*time.Millisecond)))
-		mux.HandleFunc("/events_for_week", middlewares.HTTPLogger(middlewares.WithTimeout(router.GetEventsByWeek, 50*time.Millisecond)))
-		mux.HandleFunc("/events_for_month", middlewares.HTTPLogger(middlewares.WithTimeout(router.GetEventsByMonth, 50*time.Millisecond)))
-		mux.HandleFunc("/create_event", middlewares.HTTPLogger(middlewares.WithTimeout(router.CreateEvent, 50*time.Millisecond)))
-		mux.HandleFunc("/update_event", middlewares.HTTPLogger(middlewares.WithTimeout(router.UpdateEvent, 50*time.Millisecond)))
-		mux.HandleFunc("/delete_event", middlewares.HTTPLogger(middlewares.WithTimeout(router.DeleteEvent, 50*time.Millisecond)))
+		mux.HandleFunc("/events_for_day", mw.HTTPLogger(mw.WithTimeout(router.GetEventsByDay, TimeOut)))
+		mux.HandleFunc("/events_for_week", mw.HTTPLogger(mw.WithTimeout(router.GetEventsByWeek, TimeOut)))
+		mux.HandleFunc("/events_for_month", mw.HTTPLogger(mw.WithTimeout(router.GetEventsByMonth, TimeOut)))
+		mux.HandleFunc("/create_event", mw.HTTPLogger(mw.WithTimeout(router.CreateEvent, TimeOut)))
+		mux.HandleFunc("/update_event", mw.HTTPLogger(mw.WithTimeout(router.UpdateEvent, TimeOut)))
+		mux.HandleFunc("/delete_event", mw.HTTPLogger(mw.WithTimeout(router.DeleteEvent, TimeOut)))
 
 		server := &http.Server{
 			Addr:           serverAddr.String(),

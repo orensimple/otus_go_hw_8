@@ -5,47 +5,30 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/orensimple/otus_hw1_8/internal/domain/models"
 	"github.com/orensimple/otus_hw1_8/internal/domain/services"
 	"github.com/orensimple/otus_hw1_8/internal/logger"
+	"github.com/orensimple/otus_hw1_8/internal/maindb"
 	"github.com/orensimple/otus_hw1_8/internal/memory"
+	"github.com/spf13/viper"
 )
 
 type Handler struct {
-	Handlers         *http.Handler
-	MainEventStorage *memory.MemEventStorage
-	MainEventService *services.EventService
+	Handlers           *http.Handler
+	MainEventStorage   *memory.MemEventStorage
+	MainEventService   *services.EventService
+	MaindbEventStorage *maindb.PgEventStorage
 }
 
 func (h *Handler) CreateEvent(resp http.ResponseWriter, req *http.Request) {
 	resp.Header().Set("Content-Type", "application/json; charset=utf-8")
 	data := make(map[string]interface{})
 
-	err := req.ParseForm()
+	id, tSt, tEn, err := validate(req)
 	if err != nil {
-		logger.ContextLogger.Infof("form", "uri", err)
-		resp.WriteHeader(400)
-		return
-	}
-
-	id, _ := strconv.ParseInt(req.Form.Get("id"), 10, 64)
-	if id == 0 {
-		logger.ContextLogger.Infof("id", "uri", err)
-		resp.WriteHeader(400)
-		return
-	}
-
-	tSt, err := time.Parse("2006-01-02", req.Form.Get("tSt"))
-	if err != nil {
-		logger.ContextLogger.Infof("st", "uri", err)
-		resp.WriteHeader(400)
-		return
-	}
-	tEn, err := time.Parse("2006-01-02", req.Form.Get("tEn"))
-	if err != nil {
-		logger.ContextLogger.Infof("st", "uri", err)
 		resp.WriteHeader(400)
 		return
 	}
@@ -65,29 +48,8 @@ func (h *Handler) UpdateEvent(resp http.ResponseWriter, req *http.Request) {
 	resp.Header().Set("Content-Type", "application/json; charset=utf-8")
 	data := make(map[string]interface{})
 
-	err := req.ParseForm()
+	id, tSt, tEn, err := validate(req)
 	if err != nil {
-		logger.ContextLogger.Infof("form", "uri", err)
-		resp.WriteHeader(400)
-		return
-	}
-
-	id, _ := strconv.ParseInt(req.Form.Get("id"), 10, 64)
-	if id == 0 {
-		logger.ContextLogger.Infof("id", "uri", err)
-		resp.WriteHeader(400)
-		return
-	}
-
-	tSt, err := time.Parse("2006-01-02", req.Form.Get("tSt"))
-	if err != nil {
-		logger.ContextLogger.Infof("st", "uri", err)
-		resp.WriteHeader(400)
-		return
-	}
-	tEn, err := time.Parse("2006-01-02", req.Form.Get("tEn"))
-	if err != nil {
-		logger.ContextLogger.Infof("st", "uri", err)
 		resp.WriteHeader(400)
 		return
 	}
@@ -174,4 +136,56 @@ func (h *Handler) AddForTest() {
 	tEn, _ := time.Parse("2006-01-02 15:04", "2019-11-25 20:59")
 	h.MainEventService.CreateEvent(ctx, 1, `a`, `b`, `c`, tSt, tEn)
 	h.MainEventService.CreateEvent(ctx, 2, `a`, `b`, `c`, tSt, tEn)
+}
+
+func (h *Handler) InitDB() {
+	var postgresDSN strings.Builder
+	postgresDSN.WriteString("postgres://")
+	postgresDSN.WriteString(viper.GetString("postgres.user"))
+	postgresDSN.WriteString(":")
+	postgresDSN.WriteString(viper.GetString("postgres.passwd"))
+	postgresDSN.WriteString("@")
+	postgresDSN.WriteString(viper.GetString("postgres.ip"))
+	postgresDSN.WriteString(":")
+	postgresDSN.WriteString(viper.GetString("postgres.port"))
+	postgresDSN.WriteString("/events")
+
+	var err error
+	h.MaindbEventStorage, err = maindb.NewPgEventStorage(postgresDSN.String())
+
+	if err != nil {
+		logger.ContextLogger.Infof("Problem connect to db", postgresDSN.String(), err.Error())
+
+	}
+
+	h.MainEventService = &services.EventService{
+		EventStorage: h.MaindbEventStorage,
+	}
+}
+
+func validate(req *http.Request) (int64, time.Time, time.Time, error) {
+	err := req.ParseForm()
+	if err != nil {
+		logger.ContextLogger.Infof("form", "uri", err)
+		return 0, time.Now(), time.Now(), err
+	}
+
+	id, _ := strconv.ParseInt(req.Form.Get("id"), 10, 64)
+	if id == 0 {
+		logger.ContextLogger.Infof("id", "uri", err)
+		return 0, time.Now(), time.Now(), err
+	}
+
+	tSt, err := time.Parse("2006-01-02", req.Form.Get("tSt"))
+	if err != nil {
+		logger.ContextLogger.Infof("st", "uri", err)
+		return 0, time.Now(), time.Now(), err
+	}
+	tEn, err := time.Parse("2006-01-02", req.Form.Get("tEn"))
+	if err != nil {
+		logger.ContextLogger.Infof("st", "uri", err)
+		return 0, time.Now(), time.Now(), err
+	}
+
+	return id, tSt, tEn, err
 }
