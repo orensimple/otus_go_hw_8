@@ -3,9 +3,9 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/orensimple/otus_hw1_8/internal/domain/models"
@@ -139,22 +139,13 @@ func (h *Handler) AddForTest() {
 }
 
 func (h *Handler) InitDB() {
-	var postgresDSN strings.Builder
-	postgresDSN.WriteString("postgres://")
-	postgresDSN.WriteString(viper.GetString("postgres.user"))
-	postgresDSN.WriteString(":")
-	postgresDSN.WriteString(viper.GetString("postgres.passwd"))
-	postgresDSN.WriteString("@")
-	postgresDSN.WriteString(viper.GetString("postgres.ip"))
-	postgresDSN.WriteString(":")
-	postgresDSN.WriteString(viper.GetString("postgres.port"))
-	postgresDSN.WriteString("/events")
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/events", viper.GetString("postgres.user"), viper.GetString("postgres.passwd"), viper.GetString("postgres.ip"), viper.GetString("postgres.port"))
 
 	var err error
-	h.MaindbEventStorage, err = maindb.NewPgEventStorage(postgresDSN.String())
+	h.MaindbEventStorage, err = maindb.NewPgEventStorage(dsn)
 
 	if err != nil {
-		logger.ContextLogger.Infof("Problem connect to db", postgresDSN.String(), err.Error())
+		logger.ContextLogger.Infof("Problem connect to db", dsn, err.Error())
 
 	}
 

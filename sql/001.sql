@@ -1,4 +1,4 @@
-create table events (
+CREATE TABLE IF NOT EXISTS events (
     id int primary key,
     owner text,
     title text,
