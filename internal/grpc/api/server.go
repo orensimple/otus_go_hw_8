@@ -145,6 +145,42 @@ func (cs *CalendarServer) DeleteEvent(ctx context.Context, req *DeleteEventReque
 	return resp, nil
 }
 
+func (cs *CalendarServer) GetEventsByTime(ctx context.Context, req *GetEventsByTimeRequest) (*GetEventsByTimeResponse, error) {
+
+	events, err := cs.EventService.GetEventsByTime(ctx, req.GetTimeType())
+	if err != nil {
+		if berr, ok := err.(errors.EventError); ok {
+			resp := &GetEventsByTimeResponse{
+				Error: string(berr),
+			}
+			return resp, nil
+		} else {
+			return nil, err
+		}
+	}
+	var protoEvents []*Event
+	for _, event := range events {
+		protoEvent := &Event{
+			ID:    event.ID,
+			Title: event.Title,
+			Text:  event.Text,
+			Owner: event.Owner,
+		}
+		if protoEvent.StartTime, err = ptypes.TimestampProto(event.StartTime); err != nil {
+			return nil, err
+		}
+		if protoEvent.EndTime, err = ptypes.TimestampProto(event.EndTime); err != nil {
+			return nil, err
+		}
+		protoEvents = append(protoEvents, protoEvent)
+	}
+
+	resp := &GetEventsByTimeResponse{
+		Event: protoEvents,
+	}
+	return resp, nil
+}
+
 func (cs *CalendarServer) Serve(addr string) error {
 	s := grpc.NewServer()
 	l, err := net.Listen("tcp", addr)

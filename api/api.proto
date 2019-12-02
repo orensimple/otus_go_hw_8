@@ -57,13 +57,14 @@ message GetEventsByTimeRequest {
     string timeType = 1;
 }
 
-message GetEventByTimeResponse {
-    oneof result {
-        Event event = 1;
-        string error = 2;
-    }
+message GetEventsByTimeResponse {
+    repeated Event event = 1;
+    string error = 2;
 }
 
 service CalendarService {
     rpc CreateEvent(CreateEventRequest) returns (CreateEventResponse) {}
+    rpc UpdateEvent(UpdateEventRequest) returns (UpdateEventResponse) {}
+    rpc DeleteEvent(DeleteEventRequest) returns (DeleteEventResponse) {}
+    rpc GetEventsByTime(GetEventsByTimeRequest) returns (GetEventsByTimeResponse) {}
 }
