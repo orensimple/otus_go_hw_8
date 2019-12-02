@@ -7,7 +7,9 @@ GOGET=$(GOCMD) get
 SOURCE_NAME=./cmd/http_server.go
 BINARY_NAME=otus_hw1_8
 
-all: deps build test
+all: deps gen build test
+gen:
+	protoc --go_out=plugins=grpc:internal/grpc api/*.proto
 deps:
 	$(GOGET) go.uber.org/zap
 	$(GOGET) go.uber.org/zap/zapcore
