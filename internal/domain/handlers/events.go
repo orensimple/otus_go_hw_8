@@ -145,7 +145,6 @@ func (h *Handler) InitDB() {
 	h.MaindbEventStorage, err = maindb.NewPgEventStorage(dsn)
 	if err != nil {
 		logger.ContextLogger.Infof("Problem connect to db", dsn, err.Error())
-
 	}
 
 	h.MainEventService = &services.EventService{

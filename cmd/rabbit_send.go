@@ -117,6 +117,7 @@ func sendEvents(ctx context.Context, ch *amqp.Channel, eventService *services.Ev
 
 		if err != nil {
 			logger.ContextLogger.Errorf("Failed to publish a message", err.Error())
+			continue
 		}
 		logger.ContextLogger.Infof(" Publish message", event.ID)
 	}

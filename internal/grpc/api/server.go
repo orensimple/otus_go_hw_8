@@ -17,7 +17,7 @@ type CalendarServer struct {
 
 func (cs *CalendarServer) CreateEvent(ctx context.Context, req *CreateEventRequest) (*CreateEventResponse, error) {
 
-	startTime := (*time.Time)(nil)
+	var startTime *time.Time
 	if req.GetStartTime() != nil {
 		st, err := ptypes.Timestamp(req.GetStartTime())
 		if err != nil {
@@ -26,7 +26,7 @@ func (cs *CalendarServer) CreateEvent(ctx context.Context, req *CreateEventReque
 		startTime = &st
 	}
 
-	endTime := (*time.Time)(nil)
+	var endTime *time.Time
 	if req.GetEndTime() != nil {
 		et, err := ptypes.Timestamp(req.GetEndTime())
 		if err != nil {
@@ -70,7 +70,7 @@ func (cs *CalendarServer) CreateEvent(ctx context.Context, req *CreateEventReque
 
 func (cs *CalendarServer) UpdateEvent(ctx context.Context, req *UpdateEventRequest) (*UpdateEventResponse, error) {
 
-	startTime := (*time.Time)(nil)
+	var startTime *time.Time
 	if req.GetStartTime() != nil {
 		st, err := ptypes.Timestamp(req.GetStartTime())
 		if err != nil {
@@ -79,7 +79,7 @@ func (cs *CalendarServer) UpdateEvent(ctx context.Context, req *UpdateEventReque
 		startTime = &st
 	}
 
-	endTime := (*time.Time)(nil)
+	var endTime *time.Time
 	if req.GetEndTime() != nil {
 		et, err := ptypes.Timestamp(req.GetEndTime())
 		if err != nil {
